@@ -2,12 +2,18 @@
 @inject IYouTrackService _youTrackService
 @inject IAzureDevOpsService _azureDevOpsService
 
-<header class="py-2 shadow bg-white">
-    <div class="container text-center">
-        <h1 class="display-6 m-0"><a href="/" class="text-decoration-none">Werk</a></h1>
-        <p class="m-0"><i>@(_youTrackUser is null ? "..." : $"Personalized for {_youTrackUser.FullName}!")</i></p>
+<nav class="navbar navbar-light bg-white shadow">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <img src="@_youTrackUser?.AvatarUrl" width="30" height="30" class="d-inline-block align-top rounded-circle">
+            <b>Werk!</b>
+            @if (_youTrackUser is not null)
+            {
+                <i class="text-muted">&nbsp;Personalized for @_youTrackUser.FullName</i>
+            }
+        </a>
     </div>
-</header>
+</nav>
 
 <main class="container my-3">
     @Body

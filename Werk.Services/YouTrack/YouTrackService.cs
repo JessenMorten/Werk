@@ -50,7 +50,7 @@ namespace Werk.Services.YouTrack
 
         public async Task<YouTrackUser> FetchMe()
         {
-            return new YouTrackUser(await _connection.GetCurrentUser());
+            return new YouTrackUser(await _connection.GetCurrentUser(), _serverUri.Value);
         }
 
         public async Task<HourReport> FetchHourReport()
