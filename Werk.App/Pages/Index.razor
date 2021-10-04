@@ -1,14 +1,34 @@
 ﻿@page "/"
+@inject IYouTrackService _youTrackService
 
-<div class="row">
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3 my-3">
-        <WorkedHoursToday />
+@if (_youTrackStatus == WerkServiceStatus.Ready)
+{
+    <h5>Time registration</h5>
+    <div class="row">
+        <div class="col-6">
+            <WorkedHoursToday />
+        </div>
+        <div class="col-6">
+            <WorkedHoursThisWeek />
+        </div>
     </div>
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3 my-3">
-        <WorkedHoursThisWeek />
+    <br />
+    <h5>Issues</h5>
+    <div class="row">
+        <div class="col-6">
+            <WorkedToday />
+        </div>
+        <div class="col-6">
+            <SolvedToday />
+        </div>
     </div>
-</div>
+}
 
 @code{
+    private WerkServiceStatus _youTrackStatus;
 
+    protected override async Task OnInitializedAsync()
+    {
+        _youTrackStatus = await _youTrackService.GetStatus();
+    }
 }
