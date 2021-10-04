@@ -1,4 +1,6 @@
-﻿using YouTrackSharp.Users;
+﻿using System;
+using Werk.Utility;
+using YouTrackSharp.Users;
 
 namespace Werk.Services.YouTrack
 {
@@ -16,11 +18,11 @@ namespace Werk.Services.YouTrack
 
         public bool IsOnline { get; }
 
-        internal YouTrackUser(User user)
+        internal YouTrackUser(User user, Uri serverUri)
         {
             Login = user.Login;
             FullName = user.FullName;
-            AvatarUrl = user.AvatarUrl;
+            AvatarUrl = $"{serverUri.WithEndingSlash().AbsoluteUri.Replace("/youtrack/", string.Empty)}{user.AvatarUrl}";
             Email = user.Email;
             IsGuest = user.IsGuest;
             IsOnline = user.IsOnline;

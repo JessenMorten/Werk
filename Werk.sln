@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werk.Services", "Werk.Services\Werk.Services.csproj", "{43F6D085-DD5D-4D31-95C0-1B8E45145E20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Werk.Services", "Werk.Services\Werk.Services.csproj", "{43F6D085-DD5D-4D31-95C0-1B8E45145E20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werk.Utility", "Werk.Utility\Werk.Utility.csproj", "{42763874-3AA8-4369-BADF-F9413AB46CAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Werk.Utility", "Werk.Utility\Werk.Utility.csproj", "{42763874-3AA8-4369-BADF-F9413AB46CAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Werk.App", "Werk.App\Werk.App.csproj", "{44FAD996-AE92-4FCA-8B32-A51D36C45C61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Werk.App", "Werk.App\Werk.App.csproj", "{44FAD996-AE92-4FCA-8B32-A51D36C45C61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

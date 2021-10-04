@@ -5,5 +5,7 @@
         public string BearerToken { get; set; }
 
         public string ServerUrl { get; set; }
+
+        public double WeeklyWorkHours { get; set; }
     }
 }

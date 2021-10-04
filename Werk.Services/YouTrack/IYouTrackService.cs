@@ -8,6 +8,8 @@ namespace Werk.Services.YouTrack
     {
         Task<YouTrackUser> FetchMe();
 
+        Task<HourReport> FetchHourReport();
+
         /// <summary>
         /// Fetches all <see cref="YouTrackWorkItem"/>s authored by the current user on the specified date.
         /// </summary>
