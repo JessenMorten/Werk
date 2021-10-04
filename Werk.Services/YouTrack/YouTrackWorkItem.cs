@@ -1,5 +1,4 @@
 ﻿using System;
-using YouTrackSharp.Issues;
 using YouTrackSharp.TimeTracking;
 
 namespace Werk.Services.YouTrack
@@ -9,6 +8,8 @@ namespace Werk.Services.YouTrack
         public string IssueId { get; }
 
         public string IssueSummary { get; }
+
+        public string IssueLink { get; set; }
 
         public string IssueDescription { get; }
 
@@ -22,6 +23,7 @@ namespace Werk.Services.YouTrack
         {
             IssueId = issue.Id;
             IssueSummary = issue.Summary;
+            IssueLink = issue.Link;
             IssueDescription = issue.Description;
             Duration = workItem.Duration;
             WorkDate = workItem.Date.Value.Date;
