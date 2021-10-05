@@ -12,8 +12,6 @@ namespace Werk.Services.YouTrack
 
         internal Task<User> GetCurrentUser();
 
-        internal Task<IEnumerable<WorkItem>> GetWorkItemsForIssue(Issue issue);
-
         internal Task<IEnumerable<WorkItem>> GetWorkItemsForIssue(string issueId);
     }
 }

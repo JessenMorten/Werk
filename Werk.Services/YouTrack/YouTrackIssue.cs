@@ -6,13 +6,18 @@ namespace Werk.Services.YouTrack
 {
     public class YouTrackIssue
     {
-        public string Id { get; }
+        public string Id { get; init; }
 
-        public string Summary { get; }
+        public string Summary { get; init; }
 
-        public string Description { get; }
+        public string Description { get; init; }
 
-        public string Link { get; }
+        public string Link { get; init; }
+
+        public YouTrackIssue()
+        {
+
+        }
 
         public YouTrackIssue(Issue issue, Uri serverUri)
         {
