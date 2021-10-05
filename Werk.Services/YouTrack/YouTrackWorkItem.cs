@@ -5,21 +5,26 @@ namespace Werk.Services.YouTrack
 {
     public class YouTrackWorkItem
     {
-        public string IssueId { get; }
+        public string IssueId { get; init; }
 
-        public string IssueSummary { get; }
+        public string IssueSummary { get; init; }
 
-        public string IssueLink { get; set; }
+        public string IssueLink { get; init; }
 
-        public string IssueDescription { get; }
+        public string IssueDescription { get; init; }
 
-        public string Description { get; }
+        public string Description { get; init; }
 
-        public TimeSpan Duration { get; }
+        public TimeSpan Duration { get; init; }
 
-        public DateTime WorkDate { get; }
+        public DateTime WorkDate { get; init; }
 
-        internal YouTrackWorkItem(YouTrackIssue issue, WorkItem workItem)
+        public YouTrackWorkItem()
+        {
+
+        }
+
+        public YouTrackWorkItem(YouTrackIssue issue, WorkItem workItem)
         {
             IssueId = issue.Id;
             IssueSummary = issue.Summary;

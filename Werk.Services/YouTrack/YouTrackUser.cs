@@ -6,19 +6,24 @@ namespace Werk.Services.YouTrack
 {
     public class YouTrackUser
     {
-        public string Login { get; }
+        public string Login { get; init; }
 
-        public string FullName { get; }
+        public string FullName { get; init; }
 
-        public string AvatarUrl { get; }
+        public string AvatarUrl { get; init; }
 
-        public string Email { get; }
+        public string Email { get; init; }
 
-        public bool IsGuest { get; }
+        public bool IsGuest { get; init; }
 
-        public bool IsOnline { get; }
+        public bool IsOnline { get; init; }
 
-        internal YouTrackUser(User user, Uri serverUri)
+        public YouTrackUser()
+        {
+
+        }
+
+        public YouTrackUser(User user, Uri serverUri)
         {
             Login = user.Login;
             FullName = user.FullName;

@@ -45,11 +45,6 @@ namespace Werk.Services.YouTrack
             return await _userService.Value.GetCurrentUserInfo();
         }
 
-        async Task<IEnumerable<WorkItem>> IYouTrackConnection.GetWorkItemsForIssue(Issue issue)
-        {
-            return await _timeTrackingService.Value.GetWorkItemsForIssue(issue.Id);
-        }
-
         async Task<IEnumerable<WorkItem>> IYouTrackConnection.GetWorkItemsForIssue(string issueId)
         {
             return await _timeTrackingService.Value.GetWorkItemsForIssue(issueId);
