@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Werk.Services.AzureDevOps;
 using Werk.Services.YouTrack;
-using Microsoft.Extensions.Caching.Memory;
+using Werk.Services.Cache;
 
 namespace Werk.Services
 {
@@ -10,13 +10,16 @@ namespace Werk.Services
     {
         public static void AddWerkServices(this IServiceCollection services, IConfiguration configuration)
         {
+            // Add cache service
+            services.AddDistributedMemoryCache();
+            services.AddTransient<ICacheService, CacheService>();
+
             // Add YouTrack service
             services.Configure<YouTrackOptions>(configuration.GetSection(nameof(YouTrackOptions)));
             services.AddSingleton<IYouTrackConnection, YouTrackConnection>();
             services.AddTransient<IYouTrackService, YouTrackService>();
 
             // Add Azure DevOps service
-            services.AddDistributedMemoryCache();
             services.Configure<AzureDevOpsOptions>(configuration.GetSection(nameof(AzureDevOpsOptions)));
             services.AddTransient<IAzureDevOpsService, AzureDevOpsService>();
         }
