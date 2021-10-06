@@ -1,28 +1,17 @@
 ﻿@page "/"
 @inject IYouTrackService _youTrackService
 
-@if (_youTrackStatus == WerkServiceStatus.Ready)
-{
-    <h5>Time registration</h5>
-    <div class="row">
-        <div class="col-6">
-            <WorkedHoursToday />
+<div class="row">
+    @if (_youTrackStatus == WerkServiceStatus.Ready)
+    {
+        <div class="mb-3 col-12">
+            <WorkHours />
         </div>
-        <div class="col-6">
-            <WorkedHoursThisWeek />
-        </div>
-    </div>
-    <br />
-    <h5>Issues</h5>
-    <div class="row">
-        <div class="col-6">
-            <WorkedToday />
-        </div>
-        <div class="col-6">
+        <div class="mb-3 col-12">
             <SolvedToday />
         </div>
-    </div>
-}
+    }
+</div>
 
 @code{
     private WerkServiceStatus _youTrackStatus;

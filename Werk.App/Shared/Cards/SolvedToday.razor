@@ -1,6 +1,6 @@
 ﻿@inject IYouTrackService _youTrackService
 
-<Card Title="Solved today">
+<Card Image="check.png" Title="Solved today">
     @if (_solvedToday is null)
     {
         <h4>...</h4>
@@ -11,7 +11,7 @@
         <h4>@_solvedToday.Count() issue(s) resolved today</h4>
         @foreach (var issue in _solvedToday)
         {
-            <p class="m-0"><a href="@issue.Link">@issue.Id: @issue.Summary</a></p>
+            <p class="m-0 text-truncate"><a href="@issue.Link">@issue.Summary</a></p>
         }
     }
 </Card>
