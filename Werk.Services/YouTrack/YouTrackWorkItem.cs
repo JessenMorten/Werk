@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using YouTrackSharp.TimeTracking;
 
 namespace Werk.Services.YouTrack
@@ -15,7 +16,10 @@ namespace Werk.Services.YouTrack
 
         public string Description { get; init; }
 
-        public TimeSpan Duration { get; init; }
+        public int DurationInSeconds { get; set; }
+
+        [JsonIgnore]
+        public TimeSpan Duration => TimeSpan.FromSeconds(DurationInSeconds);
 
         public DateTime WorkDate { get; init; }
 
@@ -30,7 +34,7 @@ namespace Werk.Services.YouTrack
             IssueSummary = issue.Summary;
             IssueLink = issue.Link;
             IssueDescription = issue.Description;
-            Duration = workItem.Duration;
+            DurationInSeconds = (int)workItem.Duration.TotalSeconds;
             WorkDate = workItem.Date.Value.Date;
             Description = workItem.Description;
         }

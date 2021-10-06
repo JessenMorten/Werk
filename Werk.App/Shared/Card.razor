@@ -1,5 +1,5 @@
 ﻿<div class="bg-white p-3 shadow rounded-lg">
-    <h5>@Title</h5>
+    <h5><img class="mt-n2" width="25" src="@Image" /> @Title</h5>
     <hr />
     @ChildContent
 </div>
@@ -7,6 +7,9 @@
 @code {
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Image { get; set; }
 
     [Parameter]
     public string Title { get; set; }
