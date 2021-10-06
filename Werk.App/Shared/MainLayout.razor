@@ -3,9 +3,17 @@
 @inject IAzureDevOpsService _azureDevOpsService
 
 <nav class="navbar navbar-light bg-white shadow">
-    <div class="container">
+    <div class="container-fluid">
         <a class="navbar-brand" href="/">
-            <img src="@_youTrackUser?.AvatarUrl" width="30" height="30" class="d-inline-block align-top rounded-circle">
+            @if (_youTrackUser is not null)
+            {
+                <img src="@_youTrackUser.AvatarUrl " width="30" height="30" class="d-inline-block align-top rounded-circle mr-2">
+            }
+            else
+            {
+                <img src="logo.svg" width="30" height="30" class="d-inline-block align-top rounded-circle mr-2">
+            }
+
             <b>Werk!</b>
             @if (_youTrackUser is not null)
             {
@@ -19,12 +27,12 @@
     </div>
 </nav>
 
-<main class="container my-3">
+<main class="container-fluid my-3">
     @Body
 </main>
 
 <footer class="bg-white shadow py-3">
-    <div class="container text-center">
+    <div class="container-fluid text-center">
         <p class="text-muted">
             <span title="@GetIntegrationTitle(_youTrackServiceStatus)" class="@GetIntegrationClass(_youTrackServiceStatus)">YouTrack</span>
             &nbsp;&bull;&nbsp;
