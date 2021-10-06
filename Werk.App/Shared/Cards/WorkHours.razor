@@ -1,0 +1,63 @@
+﻿@inject IYouTrackService _youTrackService
+
+<Card Image="hourglass.png" Title="Work Hours">
+    <div class="row">
+        <div class="col-4">
+            <h4>@(_workedHoursToday ?? "...") today</h4>
+            <p class="mb-3 text-truncate">@(_todayMessage ?? "...")</p>
+            <h4>@(_workedHoursThisWeek ?? "...") this week</h4>
+            <p class="m-0 text-truncate">@(_weekMessage ?? "...")</p>
+        </div>
+        <div class="col-8 text-right">
+            @if (_todaysWorkItems is not null)
+            {
+                @foreach (var workItem in _todaysWorkItems)
+                {
+                    <p class="m-0 text-truncate">
+                        <a href="@workItem.IssueLink">@workItem.IssueSummary</a>
+                        <b>@workItem.Duration.TotalHours.ToHourAndMinuteFormat()</b>
+                    </p>
+                }
+            }
+        </div>
+    </div>
+</Card>
+
+@code {
+    private string _workedHoursToday;
+
+    private string _todayMessage;
+
+    private string _workedHoursThisWeek;
+
+    private string _weekMessage;
+
+    private IEnumerable<YouTrackWorkItem> _todaysWorkItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var report = await _youTrackService.FetchHourReport();
+        _todaysWorkItems = await _youTrackService.FetchMyWorkItems(DateTime.Now);
+
+        _workedHoursToday = report.HoursWorkedToday.ToHourAndMinuteFormat();
+        _workedHoursThisWeek = report.HoursWorkedThisWeek.ToHourAndMinuteFormat();
+
+        if (report.RemainingWorkHoursToday < 0)
+        {
+            _todayMessage = $"{Math.Abs(report.RemainingWorkHoursToday).ToHourAndMinuteFormat()} above target!";
+        }
+        else
+        {
+            _todayMessage = $"{report.RemainingWorkHoursToday.ToHourAndMinuteFormat()} remaining";
+        }
+
+        if (report.RemainingWorkHoursWeek < 0)
+        {
+            _weekMessage = $"{Math.Abs(report.RemainingWorkHoursWeek).ToHourAndMinuteFormat()} above target!";
+        }
+        else
+        {
+            _weekMessage = $"{report.RemainingWorkHoursWeek.ToHourAndMinuteFormat()} remaining";
+        }
+    }
+}
