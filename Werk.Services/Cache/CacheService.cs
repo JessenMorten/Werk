@@ -21,11 +21,6 @@ namespace Werk.Services.Cache
 
         public async Task<T> GetOrSet<T>(string key, TimeSpan maxAge, Func<Task<T>> func)
         {
-            if (key == $"YouTrackService.WerkServiceStatus")
-            {
-                Console.WriteLine();
-            }
-
             T result;
             var json = await _cache.GetStringAsync(key);
 
