@@ -8,4 +8,10 @@
     <ProjectReference Include="..\Werk.Services\Werk.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
