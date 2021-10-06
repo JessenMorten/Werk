@@ -200,7 +200,7 @@ namespace Werk.Services.AzureDevOps
         private async Task<T> GetFromJson<T>(string requestUri)
         {
             // Create http client
-            var baseAddress = (_options.Value.ServerUrl + "/" + _options.Value.CollectionName).Replace("//", "/");
+            var baseAddress = _options.Value.ServerUrl + "/" + _options.Value.CollectionName;
             using var httpClient = new HttpClient
             {
                 BaseAddress = UriUtility.Create(baseAddress).WithEndingSlash()
