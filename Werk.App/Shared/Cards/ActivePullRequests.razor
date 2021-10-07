@@ -11,8 +11,16 @@
         <h4>@_myActivePullRequests.Count() active pull request(s)</h4>
         @foreach (var pullRequest in _myActivePullRequests)
         {
-            <p class="m-0 text-truncate"><b><a href="@pullRequest.Url">@pullRequest.Title</a></b></p>
-            <p class="m-0 text-truncate"><a href="@pullRequest.Repository.Url">@pullRequest.Repository.Name</a></p>
+            <a class="text-decoration-none text-dark" href="@pullRequest.WebUrl">
+                <div class="p-2 rounded-lg border mt-2">
+                    <p class="m-0 text-truncate"><b>@pullRequest.title</b></p>
+                    <img src="@pullRequest.createdBy._links.avatar.href" width="30" height="30" class="d-inline-block border align-top rounded-circle" />
+                    <small class="text-truncate">Created by @pullRequest.createdBy.displayName, @pullRequest.creationDate in @pullRequest.repository.name</small>
+                    <small>Status: @pullRequest.status</small>
+                    <small>Merge Status: @pullRequest.mergeStatus</small>
+                    <small>Reviewed by: @(string.Join(", ", (pullRequest.reviewers ?? Enumerable.Empty<PullRequest.Reviewer>()).Select(r => r.displayName)))</small>
+                </div>
+            </a>
         }
     }
 </Card>

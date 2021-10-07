@@ -168,8 +168,23 @@ namespace Werk.Services.AzureDevOps
             return await _cacheService.GetOrSet(key, maxAge, async () =>
             {
                 var requestUri = $"{repository.Project.Name}/_apis/git/repositories/{repository.Name}/pullrequests?searchCriteria.status=active";
-                var response = await GetFromJson<ListResponse<PullRequest>>(requestUri);
-                return response.Value ?? Enumerable.Empty<PullRequest>();
+                var briefPullRequests = await GetFromJson<ListResponse<BriefPullRequest>>(requestUri);
+
+                IEnumerable<PullRequest> pullRequests = null;
+
+                if (briefPullRequests.Value is not null && briefPullRequests.Value.Any())
+                {
+                    var pullRequestTasks = briefPullRequests
+                    .Value
+                    .Select(pr => GetFromJson<PullRequest>(pr.Url))
+                    .ToList();
+
+                    await Task.WhenAll(pullRequestTasks);
+
+                    pullRequests = pullRequestTasks.Select(t => t.Result);
+                }
+
+                return pullRequests ?? Enumerable.Empty<PullRequest>();
             });
         }
 
@@ -181,7 +196,7 @@ namespace Werk.Services.AzureDevOps
             return await _cacheService.GetOrSet(key, maxAge, async () =>
             {
                 var pullRequests = await FetchAllPullRequests();
-                return pullRequests.Where(p => p.CreatedBy.UniqueName == member.Identity.UniqueName);
+                return pullRequests.Where(p => p.createdBy.uniqueName == member.Identity.UniqueName);
             });
         }
 
