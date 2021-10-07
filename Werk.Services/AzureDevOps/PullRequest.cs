@@ -18,7 +18,7 @@ namespace Werk.Services.AzureDevOps
         public string Status { get; set; }
 
         [JsonPropertyName("createdBy")]
-        public Createdby CreatedBy { get; set; }
+        public Member.MemberIdentity CreatedBy { get; set; }
 
         [JsonPropertyName("creationDate")]
         public DateTime CreationDate { get; set; }
@@ -93,42 +93,6 @@ namespace Werk.Services.AzureDevOps
 
             [JsonPropertyName("lastUpdateTime")]
             public DateTime LastUpdateTime { get; set; }
-        }
-
-        public class Createdby
-        {
-            [JsonPropertyName("displayName")]
-            public string DisplayName { get; set; }
-
-            [JsonPropertyName("url")]
-            public string Url { get; set; }
-
-            [JsonPropertyName("_links")]
-            public Links Links { get; set; }
-
-            [JsonPropertyName("id")]
-            public string Id { get; set; }
-
-            [JsonPropertyName("uniqueName")]
-            public string UniqueName { get; set; }
-
-            [JsonPropertyName("imageUrl")]
-            public string ImageUrl { get; set; }
-
-            [JsonPropertyName("descriptor")]
-            public string Descriptor { get; set; }
-        }
-
-        public class Links
-        {
-            [JsonPropertyName("avatar")]
-            public Avatar Avatar { get; set; }
-        }
-
-        public class Avatar
-        {
-            [JsonPropertyName("href")]
-            public string Href { get; set; }
         }
 
         public class Commit

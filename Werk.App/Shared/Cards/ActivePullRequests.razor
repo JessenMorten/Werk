@@ -1,0 +1,27 @@
+﻿@inject IAzureDevOpsService _azureDevOpsService
+
+<Card Image="laptop.png" Title="Active pull requests">
+    @if (_myActivePullRequests is null)
+    {
+        <h4>...</h4>
+        <p class="m-0">...</p>
+    }
+    else
+    {
+        <h4>@_myActivePullRequests.Count() active pull request(s)</h4>
+        @foreach (var pullRequest in _myActivePullRequests)
+        {
+            <p class="m-0 text-truncate"><b><a href="@pullRequest.Url">@pullRequest.Title</a></b></p>
+            <p class="m-0 text-truncate"><a href="@pullRequest.Repository.Url">@pullRequest.Repository.Name</a></p>
+        }
+    }
+</Card>
+
+@code {
+    private IEnumerable<PullRequest> _myActivePullRequests;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _myActivePullRequests = await _azureDevOpsService.FetchAllPullRequests();
+    }
+}
