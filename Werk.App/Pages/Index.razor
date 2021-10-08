@@ -3,21 +3,19 @@
 @inject IAzureDevOpsService _azureDevOpsService
 
 <div class="row">
-    @if (_youTrackStatus == WerkServiceStatus.Ready)
-    {
-        <div class="mb-3 col-12">
+    <div class="col-12 col-xl-6 mb-0 mb-xl-3 pr-xl-0">
+        <div class="p-0 col-12 mb-3">
             <WorkHours />
         </div>
-        <div class="mb-3 col-12">
+        <div class="p-0 col-12 mb-3">
             <SolvedToday />
         </div>
-    }
-    @if (_azureDevOpsStatus == WerkServiceStatus.Ready)
-    {
-        <div class="mb-3 col-12">
+    </div>
+    <div class="col-12 col-xl-6">
+        <div class="mb-3">
             <ActivePullRequests />
         </div>
-    }
+    </div>
 </div>
 
 @code{
