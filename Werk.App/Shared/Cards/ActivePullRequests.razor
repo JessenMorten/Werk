@@ -12,7 +12,7 @@
 
         @foreach (var pullRequest in _myActivePullRequests.OrderByDescending(pr => pr.CreationDate))
         {
-            <div class="p-2 border rounded-lg mt-3">
+            <div class="p-2 border rounded-lg mt-3" style="opacity: @GetOpacity(pullRequest)">
                 <div class="mt-n1 float-right text-right">
                     @foreach (var reviewer in pullRequest.Reviewers)
                     {
@@ -71,5 +71,12 @@
         {
             return "secondary";
         }
+    }
+
+    private string GetOpacity(PullRequest pullRequest)
+    {
+        var totalDays = (int)(DateTime.Now - pullRequest.CreationDate).TotalDays;
+        var opacity = 100 - Math.Min(50, totalDays);
+        return $"{opacity}%";
     }
 }
