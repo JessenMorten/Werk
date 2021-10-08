@@ -16,7 +16,7 @@
                         @foreach (var workItem in _todaysWorkItems.OrderBy(w => w.LastUpdated))
                         {
                             <tr>
-                                <td class="p-0">@workItem.IssueSummary</td>
+                                <td class="p-0"><a href="@workItem.IssueLink">@workItem.IssueSummary</a></td>
                                 <td class="p-0"><b>@workItem.Duration.TotalHours.ToHourAndMinuteFormat()</b></td>
                             </tr>
                         }
