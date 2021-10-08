@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Werk.Services.Cache;
 using Werk.Utility;
+using Werk.Services.AzureDevOps.ResponseModels;
 
 namespace Werk.Services.AzureDevOps
 {
@@ -54,7 +55,7 @@ namespace Werk.Services.AzureDevOps
                 }
             });
         }
-        public async Task<IEnumerable<Project>> FetchAllProjects()
+        private async Task<IEnumerable<ProjectResponse>> FetchAllProjects()
         {
             var key = $"{nameof(AzureDevOpsService)}.AllProjects";
             var maxAge = TimeSpan.FromHours(1);
@@ -62,12 +63,12 @@ namespace Werk.Services.AzureDevOps
             return await _cacheService.GetOrSet(key, maxAge, async () =>
             {
                 var requestUri = "_apis/projects";
-                var response = await GetFromJson<ListResponse<Project>>(requestUri);
-                return response.Value ?? Enumerable.Empty<Project>();
+                var response = await GetFromJson<ListResponse<ProjectResponse>>(requestUri);
+                return response.Value ?? Enumerable.Empty<ProjectResponse>();
             });
         }
 
-        public async Task<IEnumerable<Team>> FetchAllTeams()
+        private async Task<IEnumerable<TeamResponse>> FetchAllTeams()
         {
             var key = $"{nameof(AzureDevOpsService)}.AllTeams";
             var maxAge = TimeSpan.FromHours(1);
@@ -75,12 +76,12 @@ namespace Werk.Services.AzureDevOps
             return await _cacheService.GetOrSet(key, maxAge, async () =>
             {
                 var requestUri = "_apis/teams";
-                var response = await GetFromJson<ListResponse<Team>>(requestUri);
-                return response.Value ?? Enumerable.Empty<Team>();
+                var response = await GetFromJson<ListResponse<TeamResponse>>(requestUri);
+                return response.Value ?? Enumerable.Empty<TeamResponse>();
             });
         }
 
-        public async Task<IEnumerable<Member>> FetchAllMembers()
+        private async Task<IEnumerable<MemberResponse>> FetchAllMembers()
         {
             var key = $"{nameof(AzureDevOpsService)}.AllMembers";
             var maxAge = TimeSpan.FromHours(1);
@@ -94,7 +95,7 @@ namespace Werk.Services.AzureDevOps
             });
         }
 
-        public async Task<Member> FetchMe()
+        private async Task<MemberResponse> FetchMe()
         {
             var key = $"{nameof(AzureDevOpsService)}.Me";
             var maxAge = TimeSpan.FromHours(5);
@@ -106,7 +107,7 @@ namespace Werk.Services.AzureDevOps
             });
         }
 
-        public async Task<IEnumerable<Member>> FetchMembers(Team team)
+        private async Task<IEnumerable<MemberResponse>> FetchMembers(TeamResponse team)
         {
             var key = $"{nameof(AzureDevOpsService)}.MembersByTeam.{team.Id}";
             var maxAge = TimeSpan.FromHours(5);
@@ -114,12 +115,12 @@ namespace Werk.Services.AzureDevOps
             return await _cacheService.GetOrSet(key, maxAge, async () =>
             {
                 var requestUri = $"_apis/projects/{team.ProjectId}/teams/{team.Id}/members";
-                var response = await GetFromJson<ListResponse<Member>>(requestUri);
-                return response.Value ?? Enumerable.Empty<Member>();
+                var response = await GetFromJson<ListResponse<MemberResponse>>(requestUri);
+                return response.Value ?? Enumerable.Empty<MemberResponse>();
             });
         }
 
-        public async Task<IEnumerable<Repository>> FetchAllRepositories()
+        private async Task<IEnumerable<RepositoryResponse>> FetchAllRepositories()
         {
             var key = $"{nameof(AzureDevOpsService)}.AllRepositories";
             var maxAge = TimeSpan.FromHours(3);
@@ -133,7 +134,7 @@ namespace Werk.Services.AzureDevOps
             });
         }
 
-        public async Task<IEnumerable<Repository>> FetchRepositories(Project project)
+        private async Task<IEnumerable<RepositoryResponse>> FetchRepositories(ProjectResponse project)
         {
             var key = $"{nameof(AzureDevOpsService)}.RepositoriesByProject.{project.Name}";
             var maxAge = TimeSpan.FromHours(3);
@@ -141,8 +142,8 @@ namespace Werk.Services.AzureDevOps
             return await _cacheService.GetOrSet(key, maxAge, async () =>
             {
                 var requestUri = $"{project.Name}/_apis/git/repositories?api-version=6.0";
-                var response = await GetFromJson<ListResponse<Repository>>(requestUri);
-                return response.Value ?? Enumerable.Empty<Repository>();
+                var response = await GetFromJson<ListResponse<RepositoryResponse>>(requestUri);
+                return response.Value ?? Enumerable.Empty<RepositoryResponse>();
             });
         }
 
@@ -160,7 +161,7 @@ namespace Werk.Services.AzureDevOps
             });
         }
 
-        public async Task<IEnumerable<PullRequest>> FetchPullRequests(Repository repository)
+        private async Task<IEnumerable<PullRequest>> FetchPullRequests(RepositoryResponse repository)
         {
             var key = $"{nameof(AzureDevOpsService)}.PullRequestsByRepository.{repository.Name}";
             var maxAge = TimeSpan.FromMinutes(1);
@@ -168,27 +169,29 @@ namespace Werk.Services.AzureDevOps
             return await _cacheService.GetOrSet(key, maxAge, async () =>
             {
                 var requestUri = $"{repository.Project.Name}/_apis/git/repositories/{repository.Name}/pullrequests?searchCriteria.status=active";
-                var briefPullRequests = await GetFromJson<ListResponse<BriefPullRequest>>(requestUri);
+                var briefPullRequests = await GetFromJson<ListResponse<BriefPullRequestResponse>>(requestUri);
 
                 IEnumerable<PullRequest> pullRequests = null;
 
                 if (briefPullRequests.Value is not null && briefPullRequests.Value.Any())
                 {
                     var pullRequestTasks = briefPullRequests
-                    .Value
-                    .Select(pr => GetFromJson<PullRequest>(pr.Url))
-                    .ToList();
+                        .Value
+                        .Select(pr => GetFromJson<PullRequestResponse>(pr.Url))
+                        .ToList();
 
                     await Task.WhenAll(pullRequestTasks);
 
-                    pullRequests = pullRequestTasks.Select(t => t.Result);
+                    pullRequests = pullRequestTasks
+                        .Select(t => new PullRequest(t.Result))
+                        .OrderByDescending(p => p.CreationDate);
                 }
 
                 return pullRequests ?? Enumerable.Empty<PullRequest>();
             });
         }
 
-        public async Task<IEnumerable<PullRequest>> FetchPullRequests(Member member)
+        private async Task<IEnumerable<PullRequest>> FetchPullRequests(MemberResponse member)
         {
             var key = $"{nameof(AzureDevOpsService)}.PullRequestsByMember.{member.Identity.UniqueName}";
             var maxAge = TimeSpan.FromMinutes(1);
@@ -196,11 +199,11 @@ namespace Werk.Services.AzureDevOps
             return await _cacheService.GetOrSet(key, maxAge, async () =>
             {
                 var pullRequests = await FetchAllPullRequests();
-                return pullRequests.Where(p => p.createdBy.uniqueName == member.Identity.UniqueName);
+                return pullRequests.Where(p => p.Creator.UniqueName == member.Identity.UniqueName);
             });
         }
 
-        public async Task<IEnumerable<PullRequest>> FetchMyPullRequests()
+        private async Task<IEnumerable<PullRequest>> FetchMyPullRequests()
         {
             var key = $"{nameof(AzureDevOpsService)}.MyPullRequests";
             var maxAge = TimeSpan.FromMinutes(1);

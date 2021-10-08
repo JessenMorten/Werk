@@ -1,197 +1,126 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Werk.Services.AzureDevOps.ResponseModels;
 
 namespace Werk.Services.AzureDevOps
 {
     public class PullRequest
     {
-        public string WebUrl => repository.webUrl + "/pullrequest/" + pullRequestId;
-        public Repository repository { get; set; }
-        public int pullRequestId { get; set; }
-        public int codeReviewId { get; set; }
-        public string status { get; set; }
-        public Createdby createdBy { get; set; }
-        public DateTime creationDate { get; set; }
-        public string title { get; set; }
-        public string description { get; set; }
-        public string sourceRefName { get; set; }
-        public string targetRefName { get; set; }
-        public string mergeStatus { get; set; }
-        public bool isDraft { get; set; }
-        public string mergeId { get; set; }
-        public Lastmergesourcecommit lastMergeSourceCommit { get; set; }
-        public Lastmergetargetcommit lastMergeTargetCommit { get; set; }
-        public Lastmergecommit lastMergeCommit { get; set; }
-        public Reviewer[] reviewers { get; set; }
-        public string url { get; set; }
-        public _Links1 _links { get; set; }
-        public bool supportsIterations { get; set; }
-        public string artifactId { get; set; }
+        public string Url { get; init; }
 
-        public class Reviewer
+        public string Title { get; init; }
+
+        public string Description { get; init; }
+
+        public PullRequestMergeStatus MergeStatus { get; init; }
+
+        public PullRequestCreator Creator { get; set; }
+
+        public IEnumerable<PullRequestReviewer> Reviewers { get; set; }
+
+        public DateTime CreationDate { get; set; }
+
+        public string RepositoryName { get; set; }
+
+        public string RepositoryUrl { get; set; }
+
+        public PullRequest()
         {
-            public string reviewerUrl { get; set; }
-            public int vote { get; set; }
-            public bool hasDeclined { get; set; }
-            public bool isFlagged { get; set; }
-            public string displayName { get; set; }
-            public string url { get; set; }
-            public _Links _links { get; set; }
-            public string id { get; set; }
-            public string uniqueName { get; set; }
-            public string imageUrl { get; set; }
 
-            public class _Links
+        }
+
+        public PullRequest(PullRequestResponse pullRequestResponse)
+        {
+            Url = pullRequestResponse.repository.webUrl + "/pullrequest/" + pullRequestResponse.pullRequestId;
+            Title = pullRequestResponse.title;
+            Description = pullRequestResponse.description;
+            MergeStatus = new PullRequestMergeStatus
             {
-                public Avatar avatar { get; set; }
-            }
-
-            public class Avatar
+                Value = pullRequestResponse.mergeStatus
+            };
+            Creator = new PullRequestCreator
             {
-                public string href { get; set; }
-            }
+                DisplayName = pullRequestResponse.createdBy.displayName,
+                AvatarUrl = pullRequestResponse.createdBy._links.avatar.href,
+                UniqueName = pullRequestResponse.createdBy.uniqueName
+            };
+            Reviewers = (pullRequestResponse.reviewers ?? Enumerable.Empty<PullRequestResponse.Reviewer>())
+                .Select(r => new PullRequestReviewer
+                {
+                    DisplayName = r.displayName,
+                    AvatarUrl = r._links.avatar.href,
+                    VoteValue = r.vote
+                });
+            CreationDate = pullRequestResponse.creationDate;
+            RepositoryName = pullRequestResponse.repository.name;
+            RepositoryUrl = pullRequestResponse.repository.webUrl;
         }
 
-        public class Repository
+        public class PullRequestMergeStatus
         {
-            public string id { get; set; }
-            public string name { get; set; }
-            public string url { get; set; }
-            public Project project { get; set; }
-            public int size { get; set; }
-            public string remoteUrl { get; set; }
-            public string sshUrl { get; set; }
-            public string webUrl { get; set; }
+            public string Value { get; set; }
+
+            public string Description => Value switch
+            {
+                "conflicts" => "Pull request merge failed due to conflicts",
+                "failure" => "Pull request merge failed",
+                "notSet" => "Status is not set",
+                "queued" => "Pull request merge is queued",
+                "rejectedByPolicy" => "Pull request merge rejected by policy",
+                "succeeded" => "Pull request merge succeeded",
+                _ => "Unknown merge status"
+            };
+
+            public bool Conflicts => Value == "conflicts";
+
+            public bool Failure => Value == "failure";
+
+            public bool NotSet => Value == "notSet";
+
+            public bool Queued => Value == "queued";
+
+            public bool RejectedByPolicy => Value == "rejectedByPolicy";
+
+            public bool Succeeded => Value == "succeeded";
         }
 
-        public class Project
+        public class PullRequestCreator
         {
-            public string id { get; set; }
-            public string name { get; set; }
-            public string url { get; set; }
-            public string state { get; set; }
-            public int revision { get; set; }
-            public string visibility { get; set; }
-            public DateTime lastUpdateTime { get; set; }
+            public string DisplayName { get; init; }
+
+            public string AvatarUrl { get; init; }
+
+            public string UniqueName { get; set; }
         }
 
-        public class Createdby
+        public class PullRequestReviewer
         {
-            public string displayName { get; set; }
-            public string url { get; set; }
-            public _Links _links { get; set; }
-            public string id { get; set; }
-            public string uniqueName { get; set; }
-            public string imageUrl { get; set; }
-            public string descriptor { get; set; }
-        }
+            public string DisplayName { get; init; }
 
-        public class _Links
-        {
-            public Avatar avatar { get; set; }
-        }
+            public string AvatarUrl { get; init; }
 
-        public class Avatar
-        {
-            public string href { get; set; }
-        }
+            public string VoteDescription => VoteValue switch
+            {
+                10 => "Approved",
+                5 => "Approved with suggestions",
+                0 => "No vote",
+                -5 => "Waiting for author",
+                -10 => "Rejected",
+                _ => "Unknown"
+            };
 
-        public class Lastmergesourcecommit
-        {
-            public string commitId { get; set; }
-            public string url { get; set; }
-        }
+            public int VoteValue { get; set; }
 
-        public class Lastmergetargetcommit
-        {
-            public string commitId { get; set; }
-            public string url { get; set; }
-        }
+            public bool Approved => VoteValue == 10;
 
-        public class Lastmergecommit
-        {
-            public string commitId { get; set; }
-            public Author author { get; set; }
-            public Committer committer { get; set; }
-            public string comment { get; set; }
-            public string url { get; set; }
-        }
+            public bool ApprovedWithSuggestions => VoteValue == 5;
 
-        public class Author
-        {
-            public string name { get; set; }
-            public string email { get; set; }
-            public DateTime date { get; set; }
-        }
+            public bool NoVote => VoteValue == 0;
 
-        public class Committer
-        {
-            public string name { get; set; }
-            public string email { get; set; }
-            public DateTime date { get; set; }
-        }
+            public bool WaitingForAuthor => VoteValue == -5;
 
-        public class _Links1
-        {
-            public Self self { get; set; }
-            public Repository1 repository { get; set; }
-            public Workitems workItems { get; set; }
-            public Sourcebranch sourceBranch { get; set; }
-            public Targetbranch targetBranch { get; set; }
-            public Statuses statuses { get; set; }
-            public Sourcecommit sourceCommit { get; set; }
-            public Targetcommit targetCommit { get; set; }
-            public Createdby1 createdBy { get; set; }
-            public Iterations iterations { get; set; }
-        }
-
-        public class Self
-        {
-            public string href { get; set; }
-        }
-
-        public class Repository1
-        {
-            public string href { get; set; }
-        }
-
-        public class Workitems
-        {
-            public string href { get; set; }
-        }
-
-        public class Sourcebranch
-        {
-            public string href { get; set; }
-        }
-
-        public class Targetbranch
-        {
-            public string href { get; set; }
-        }
-
-        public class Statuses
-        {
-            public string href { get; set; }
-        }
-
-        public class Sourcecommit
-        {
-            public string href { get; set; }
-        }
-
-        public class Targetcommit
-        {
-            public string href { get; set; }
-        }
-
-        public class Createdby1
-        {
-            public string href { get; set; }
-        }
-
-        public class Iterations
-        {
-            public string href { get; set; }
+            public bool Rejected => VoteValue == -10;
         }
     }
 }

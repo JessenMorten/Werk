@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Werk.Services.AzureDevOps
+namespace Werk.Services.AzureDevOps.ResponseModels
 {
-    public class BriefPullRequest
+    public class BriefPullRequestResponse
     {
         [JsonPropertyName("repository")]
         public PullRequestRepository Repository { get; set; }
@@ -18,7 +18,7 @@ namespace Werk.Services.AzureDevOps
         public string Status { get; set; }
 
         [JsonPropertyName("createdBy")]
-        public Member.MemberIdentity CreatedBy { get; set; }
+        public MemberResponse.MemberIdentity CreatedBy { get; set; }
 
         [JsonPropertyName("creationDate")]
         public DateTime CreationDate { get; set; }
