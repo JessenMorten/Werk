@@ -182,9 +182,7 @@ namespace Werk.Services.AzureDevOps
 
                     await Task.WhenAll(pullRequestTasks);
 
-                    pullRequests = pullRequestTasks
-                        .Select(t => new PullRequest(t.Result))
-                        .OrderByDescending(p => p.CreationDate);
+                    pullRequests = pullRequestTasks.Select(t => new PullRequest(t.Result));
                 }
 
                 return pullRequests ?? Enumerable.Empty<PullRequest>();

@@ -10,7 +10,7 @@
     {
         <h4>@_myActivePullRequests.Count() active pull request(s)</h4>
 
-        @foreach (var pullRequest in _myActivePullRequests)
+        @foreach (var pullRequest in _myActivePullRequests.OrderByDescending(pr => pr.CreationDate))
         {
             <div class="p-2 border rounded-lg mt-3">
                 <div class="mt-n1 float-right text-right">
