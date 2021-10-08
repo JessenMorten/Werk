@@ -8,16 +8,20 @@
             <h4>@(_workedHoursThisWeek ?? "...") this week</h4>
             <p class="m-0 text-truncate">@(_weekMessage ?? "...")</p>
         </div>
-        <div class="col-8 text-right">
+        <div class="col-8">
             @if (_todaysWorkItems is not null)
             {
-                @foreach (var workItem in _todaysWorkItems)
-                {
-                    <p class="m-0 text-truncate">
-                        <a href="@workItem.IssueLink">@workItem.IssueSummary</a>
-                        <b>@workItem.Duration.TotalHours.ToHourAndMinuteFormat()</b>
-                    </p>
-                }
+                <table class="table table-sm table-borderless m-0 text-right">
+                    <tbody>
+                        @foreach (var workItem in _todaysWorkItems.OrderBy(w => w.LastUpdated))
+                        {
+                            <tr>
+                                <td class="p-0"><a href="@workItem.IssueLink">@workItem.IssueSummary</a></td>
+                                <td class="p-0"><b>@workItem.Duration.TotalHours.ToHourAndMinuteFormat()</b></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             }
         </div>
     </div>

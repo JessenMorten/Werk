@@ -1,15 +1,15 @@
 ﻿@inject IYouTrackService _youTrackService
 
-<Card Image="check.png" Title="Solved today">
-    @if (_solvedToday is null)
+<Card Image="briefcase.png" Title="My unresolved issues">
+    @if (_unresolvedIssues is null)
     {
         <h4>...</h4>
         <p class="m-0">...</p>
     }
     else
     {
-        <h4>@_solvedToday.Count() issue(s) resolved today</h4>
-        @foreach (var issue in _solvedToday)
+        <h4>@_unresolvedIssues.Count() unresolved issue(s)</h4>
+        @foreach (var issue in _unresolvedIssues)
         {
             <p class="m-0 text-truncate" title="@issue.Summary"><a href="@issue.Link"><b>@issue.Id</b> @issue.Summary</a></p>
         }
@@ -17,10 +17,10 @@
 </Card>
 
 @code {
-    private IEnumerable<YouTrackIssue> _solvedToday;
+    private IEnumerable<YouTrackIssue> _unresolvedIssues;
 
     protected override async Task OnInitializedAsync()
     {
-        _solvedToday = await _youTrackService.FetchMyResolvedIssues(DateTime.Now);
+        _unresolvedIssues = await _youTrackService.FetchMyUnresolvedIssues();
     }
 }

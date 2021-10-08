@@ -1,0 +1,82 @@
+﻿@inject IAzureDevOpsService _azureDevOpsService
+
+<Card Image="laptop.png" Title="Active pull requests">
+    @if (_myActivePullRequests is null)
+    {
+        <h4>...</h4>
+        <p class="m-0">...</p>
+    }
+    else
+    {
+        <h4>@_myActivePullRequests.Count() active pull request(s)</h4>
+
+        @foreach (var pullRequest in _myActivePullRequests.OrderByDescending(pr => pr.CreationDate))
+        {
+            <div class="p-2 border rounded-lg mt-3" style="opacity: @GetOpacity(pullRequest)">
+                <div class="mt-n1 float-right text-right">
+                    @foreach (var reviewer in pullRequest.Reviewers)
+                    {
+                        <small><b class="text-@GetVoteDescriptionClass(reviewer)">@reviewer.VoteDescription</b> <img title="@reviewer.DisplayName" class="rounded-lg border" width="30" src="@reviewer.AvatarUrl" /></small>
+                        <br />
+                    }
+                </div>
+
+                <div class="d-flex justify-content-start">
+                    <img src="@pullRequest.Creator.AvatarUrl" width="60" height="60"
+                         class="m-1 d-inline-block border align-top rounded-lg">
+
+                    <div class="d-flex flex-column ml-2">
+                        <h6><a href="@pullRequest.Url">@pullRequest.Title</a></h6>
+                        <small class="text-truncate">Created by @pullRequest.Creator.DisplayName</small>
+                        <small class="text-truncate"><span title="@pullRequest.CreationDate">@((DateTime.Now - pullRequest.CreationDate).ToAgoMessage())</span> in <a href="@pullRequest.RepositoryUrl">@pullRequest.RepositoryName</a></small>
+                    </div>
+                </div>
+
+                @if (pullRequest.MergeStatus.Conflicts || pullRequest.MergeStatus.Failure)
+                {
+                    <span class="ml-n3 float-left badge badge-danger">@pullRequest.MergeStatus.Description</span>
+                }
+                else if (pullRequest.MergeStatus.RejectedByPolicy)
+                {
+                    <span class="ml-n3 float-left badge badge-warning">@pullRequest.MergeStatus.Description</span>
+                }
+            </div>
+        }
+    }
+</Card>
+
+@code {
+    private IEnumerable<PullRequest> _myActivePullRequests;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _myActivePullRequests = await _azureDevOpsService.FetchAllPullRequests();
+    }
+
+    private string GetVoteDescriptionClass(PullRequest.PullRequestReviewer reviewer)
+    {
+        if (reviewer.Approved || reviewer.ApprovedWithSuggestions)
+        {
+            return "success";
+        }
+        else if (reviewer.WaitingForAuthor)
+        {
+            return "warning";
+        }
+        else if (reviewer.Rejected)
+        {
+            return "danger";
+        }
+        else
+        {
+            return "secondary";
+        }
+    }
+
+    private string GetOpacity(PullRequest pullRequest)
+    {
+        var totalDays = (int)(DateTime.Now - pullRequest.CreationDate).TotalDays;
+        var opacity = 100 - Math.Min(50, totalDays);
+        return $"{opacity}%";
+    }
+}

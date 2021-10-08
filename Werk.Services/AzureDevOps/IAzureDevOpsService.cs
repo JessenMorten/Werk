@@ -5,26 +5,26 @@ namespace Werk.Services.AzureDevOps
 {
     public interface IAzureDevOpsService : IWerkService
     {
-        Task<IEnumerable<Project>> FetchAllProjects();
+        //Task<IEnumerable<Project>> FetchAllProjects();
 
-        Task<IEnumerable<Team>> FetchAllTeams();
+        //Task<IEnumerable<Team>> FetchAllTeams();
 
-        Task<IEnumerable<Member>> FetchAllMembers();
+        //Task<IEnumerable<Member>> FetchAllMembers();
 
-        Task<IEnumerable<Member>> FetchMembers(Team team);
+        //Task<IEnumerable<Member>> FetchMembers(Team team);
 
-        Task<Member> FetchMe();
+        //Task<Member> FetchMe();
 
-        Task<IEnumerable<Repository>> FetchAllRepositories();
+        //Task<IEnumerable<Repository>> FetchAllRepositories();
 
-        Task<IEnumerable<Repository>> FetchRepositories(Project project);
+        //Task<IEnumerable<Repository>> FetchRepositories(Project project);
 
         Task<IEnumerable<PullRequest>> FetchAllPullRequests();
 
-        Task<IEnumerable<PullRequest>> FetchMyPullRequests();
+        //Task<IEnumerable<PullRequest>> FetchMyPullRequests();
 
-        Task<IEnumerable<PullRequest>> FetchPullRequests(Repository repository);
+        //Task<IEnumerable<PullRequest>> FetchPullRequests(Repository repository);
 
-        Task<IEnumerable<PullRequest>> FetchPullRequests(Member member);
+        //Task<IEnumerable<PullRequest>> FetchPullRequests(Member member);
     }
 }
