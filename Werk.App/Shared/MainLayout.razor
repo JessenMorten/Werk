@@ -3,7 +3,7 @@
 @inject IAzureDevOpsService _azureDevOpsService
 
 <nav class="navbar navbar-light bg-white shadow">
-    <div class="container-fluid">
+    <div class="container-fluid p-0">
         <a class="navbar-brand" href="/">
             @if (_youTrackUser is not null)
             {
@@ -20,10 +20,6 @@
                 <i class="text-muted">&nbsp;Personalized for @_youTrackUser.FullName</i>
             }
         </a>
-
-        <form class="form-inline">
-            <input disabled class="form-control text-right" type="search" placeholder="Search...">
-        </form>
     </div>
 </nav>
 

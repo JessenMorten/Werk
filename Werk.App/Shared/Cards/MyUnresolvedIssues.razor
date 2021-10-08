@@ -1,0 +1,26 @@
+﻿@inject IYouTrackService _youTrackService
+
+<Card Image="briefcase.png" Title="My unresolved issues">
+    @if (_unresolvedIssues is null)
+    {
+        <h4>...</h4>
+        <p class="m-0">...</p>
+    }
+    else
+    {
+        <h4>@_unresolvedIssues.Count() unresolved issue(s)</h4>
+        @foreach (var issue in _unresolvedIssues)
+        {
+            <p class="m-0 text-truncate"><a href="@issue.Link"><b>@issue.Id</b> @issue.Summary</a></p>
+        }
+    }
+</Card>
+
+@code {
+    private IEnumerable<YouTrackIssue> _unresolvedIssues;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _unresolvedIssues = await _youTrackService.FetchMyUnresolvedIssues();
+    }
+}
