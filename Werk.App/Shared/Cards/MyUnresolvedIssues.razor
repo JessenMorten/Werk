@@ -11,7 +11,7 @@
         <h4>@_unresolvedIssues.Count() unresolved issue(s)</h4>
         @foreach (var issue in _unresolvedIssues)
         {
-            <p class="m-0 text-truncate"><a href="@issue.Link"><b>@issue.Id</b> @issue.Summary</a></p>
+            <p class="m-0 text-truncate" title="@issue.Summary"><a href="@issue.Link"><b>@issue.Id</b> @issue.Summary</a></p>
         }
     }
 </Card>
