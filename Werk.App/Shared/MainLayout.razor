@@ -3,7 +3,7 @@
 @inject IAzureDevOpsService _azureDevOpsService
 
 <nav class="navbar navbar-light bg-white shadow">
-    <div class="container">
+    <div class="container-fluid p-0">
         <a class="navbar-brand" href="/">
             @if (_youTrackUser is not null)
             {
@@ -20,19 +20,15 @@
                 <i class="text-muted">&nbsp;Personalized for @_youTrackUser.FullName</i>
             }
         </a>
-
-        <form class="form-inline">
-            <input disabled class="form-control text-right" type="search" placeholder="Search...">
-        </form>
     </div>
 </nav>
 
-<main class="container my-3">
+<main class="container-fluid my-3">
     @Body
 </main>
 
 <footer class="bg-white shadow py-3">
-    <div class="container text-center">
+    <div class="container-fluid text-center">
         <p class="text-muted">
             <span title="@GetIntegrationTitle(_youTrackServiceStatus)" class="@GetIntegrationClass(_youTrackServiceStatus)">YouTrack</span>
             &nbsp;&bull;&nbsp;

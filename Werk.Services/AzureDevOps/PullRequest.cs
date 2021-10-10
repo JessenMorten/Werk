@@ -1,143 +1,126 @@
 ﻿using System;
-using System.Text.Json.Serialization;
+using System.Collections.Generic;
+using System.Linq;
+using Werk.Services.AzureDevOps.ResponseModels;
 
 namespace Werk.Services.AzureDevOps
 {
     public class PullRequest
     {
-        [JsonPropertyName("repository")]
-        public PullRequestRepository Repository { get; set; }
+        public string Url { get; init; }
 
-        [JsonPropertyName("pullRequestId")]
-        public int PullRequestId { get; set; }
+        public string Title { get; init; }
 
-        [JsonPropertyName("codeReviewId")]
-        public int CodeReviewId { get; set; }
+        public string Description { get; init; }
 
-        [JsonPropertyName("status")]
-        public string Status { get; set; }
+        public PullRequestMergeStatus MergeStatus { get; init; }
 
-        [JsonPropertyName("createdBy")]
-        public Createdby CreatedBy { get; set; }
+        public PullRequestCreator Creator { get; set; }
 
-        [JsonPropertyName("creationDate")]
+        public IEnumerable<PullRequestReviewer> Reviewers { get; set; }
+
         public DateTime CreationDate { get; set; }
 
-        [JsonPropertyName("title")]
-        public string Title { get; set; }
+        public string RepositoryName { get; set; }
 
-        [JsonPropertyName("description")]
-        public string Description { get; set; }
+        public string RepositoryUrl { get; set; }
 
-        [JsonPropertyName("sourceRefName")]
-        public string SourceRefName { get; set; }
-
-        [JsonPropertyName("targetRefName")]
-        public string TargetRefName { get; set; }
-
-        [JsonPropertyName("mergeStatus")]
-        public string MergeStatus { get; set; }
-
-        [JsonPropertyName("isDraft")]
-        public bool IsDraft { get; set; }
-
-        [JsonPropertyName("mergeId")]
-        public string MergeId { get; set; }
-
-        [JsonPropertyName("lastMergeSourceCommit")]
-        public Commit LastMergeSourceCommit { get; set; }
-
-        [JsonPropertyName("lastMergeTargetCommit")]
-        public Commit LastMergeTargetCommit { get; set; }
-
-        [JsonPropertyName("lastMergeCommit")]
-        public Commit LastMergeCommit { get; set; }
-
-        [JsonPropertyName("reviewers")]
-        public object[] Reviewers { get; set; }
-
-        [JsonPropertyName("url")]
-        public string Url { get; set; }
-
-        [JsonPropertyName("supportsIterations")]
-        public bool SupportsIterations { get; set; }
-
-        public class PullRequestRepository
+        public PullRequest()
         {
-            [JsonPropertyName("id")]
-            public string Id { get; set; }
 
-            [JsonPropertyName("name")]
-            public string Name { get; set; }
-
-            [JsonPropertyName("url")]
-            public string Url { get; set; }
-
-            [JsonPropertyName("project")]
-            public Project Project { get; set; }
         }
 
-        public class Project
+        public PullRequest(PullRequestResponse pullRequestResponse)
         {
-            [JsonPropertyName("id")]
-            public string Id { get; set; }
-
-            [JsonPropertyName("name")]
-            public string Name { get; set; }
-
-            [JsonPropertyName("state")]
-            public string State { get; set; }
-
-            [JsonPropertyName("visibility")]
-            public string Visibility { get; set; }
-
-            [JsonPropertyName("lastUpdateTime")]
-            public DateTime LastUpdateTime { get; set; }
+            Url = pullRequestResponse.repository.webUrl + "/pullrequest/" + pullRequestResponse.pullRequestId;
+            Title = pullRequestResponse.title;
+            Description = pullRequestResponse.description;
+            MergeStatus = new PullRequestMergeStatus
+            {
+                Value = pullRequestResponse.mergeStatus
+            };
+            Creator = new PullRequestCreator
+            {
+                DisplayName = pullRequestResponse.createdBy.displayName,
+                AvatarUrl = pullRequestResponse.createdBy._links.avatar.href,
+                UniqueName = pullRequestResponse.createdBy.uniqueName
+            };
+            Reviewers = (pullRequestResponse.reviewers ?? Enumerable.Empty<PullRequestResponse.Reviewer>())
+                .Select(r => new PullRequestReviewer
+                {
+                    DisplayName = r.displayName,
+                    AvatarUrl = r._links.avatar.href,
+                    VoteValue = r.vote
+                });
+            CreationDate = pullRequestResponse.creationDate;
+            RepositoryName = pullRequestResponse.repository.name;
+            RepositoryUrl = pullRequestResponse.repository.webUrl;
         }
 
-        public class Createdby
+        public class PullRequestMergeStatus
         {
-            [JsonPropertyName("displayName")]
-            public string DisplayName { get; set; }
+            public string Value { get; set; }
 
-            [JsonPropertyName("url")]
-            public string Url { get; set; }
+            public string Description => Value switch
+            {
+                "conflicts" => "Pull request merge failed due to conflicts",
+                "failure" => "Pull request merge failed",
+                "notSet" => "Status is not set",
+                "queued" => "Pull request merge is queued",
+                "rejectedByPolicy" => "Pull request merge rejected by policy",
+                "succeeded" => "Pull request merge succeeded",
+                _ => "Unknown merge status"
+            };
 
-            [JsonPropertyName("_links")]
-            public Links Links { get; set; }
+            public bool Conflicts => Value == "conflicts";
 
-            [JsonPropertyName("id")]
-            public string Id { get; set; }
+            public bool Failure => Value == "failure";
 
-            [JsonPropertyName("uniqueName")]
+            public bool NotSet => Value == "notSet";
+
+            public bool Queued => Value == "queued";
+
+            public bool RejectedByPolicy => Value == "rejectedByPolicy";
+
+            public bool Succeeded => Value == "succeeded";
+        }
+
+        public class PullRequestCreator
+        {
+            public string DisplayName { get; init; }
+
+            public string AvatarUrl { get; init; }
+
             public string UniqueName { get; set; }
-
-            [JsonPropertyName("imageUrl")]
-            public string ImageUrl { get; set; }
-
-            [JsonPropertyName("descriptor")]
-            public string Descriptor { get; set; }
         }
 
-        public class Links
+        public class PullRequestReviewer
         {
-            [JsonPropertyName("avatar")]
-            public Avatar Avatar { get; set; }
-        }
+            public string DisplayName { get; init; }
 
-        public class Avatar
-        {
-            [JsonPropertyName("href")]
-            public string Href { get; set; }
-        }
+            public string AvatarUrl { get; init; }
 
-        public class Commit
-        {
-            [JsonPropertyName("commitId")]
-            public string CommitId { get; set; }
+            public string VoteDescription => VoteValue switch
+            {
+                10 => "Approved",
+                5 => "Approved with suggestions",
+                0 => "No vote",
+                -5 => "Waiting for author",
+                -10 => "Rejected",
+                _ => "Unknown"
+            };
 
-            [JsonPropertyName("url")]
-            public string Url { get; set; }
+            public int VoteValue { get; set; }
+
+            public bool Approved => VoteValue == 10;
+
+            public bool ApprovedWithSuggestions => VoteValue == 5;
+
+            public bool NoVote => VoteValue == 0;
+
+            public bool WaitingForAuthor => VoteValue == -5;
+
+            public bool Rejected => VoteValue == -10;
         }
     }
 }

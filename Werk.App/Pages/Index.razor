@@ -1,23 +1,38 @@
 ﻿@page "/"
 @inject IYouTrackService _youTrackService
+@inject IAzureDevOpsService _azureDevOpsService
+
 
 <div class="row">
-    @if (_youTrackStatus == WerkServiceStatus.Ready)
-    {
-        <div class="mb-3 col-12">
-            <WorkHours />
+    <!-- Left -->
+    <div class="col-12 col-xl-6">
+        <div class="row">
+            <div class="col-12 mb-3 pr-xl-0">
+                <WorkHours />
+            </div>
+            <div class="col-12 col-xl-6 mb-3 pr-xl-0">
+                <MyUnresolvedIssues />
+            </div>
+            <div class="col-12 col-xl-6 mb-3 pr-0">
+                <SolvedToday />
+            </div>
         </div>
-        <div class="mb-3 col-12">
-            <SolvedToday />
-        </div>
-    }
+    </div>
+
+    <!-- Right -->
+    <div class="col-12 col-xl-6 mb-3">
+        <ActivePullRequests />
+    </div>
 </div>
 
 @code{
     private WerkServiceStatus _youTrackStatus;
 
+    private WerkServiceStatus _azureDevOpsStatus;
+
     protected override async Task OnInitializedAsync()
     {
         _youTrackStatus = await _youTrackService.GetStatus();
+        _azureDevOpsStatus = await _azureDevOpsService.GetStatus();
     }
 }

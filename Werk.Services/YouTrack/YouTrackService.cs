@@ -139,6 +139,19 @@ namespace Werk.Services.YouTrack
             });
         }
 
+        public async Task<IEnumerable<YouTrackIssue>> FetchMyUnresolvedIssues()
+        {
+            var key = $"{nameof(YouTrackService)}.MyUnresolvedIssues";
+            var maxAge = TimeSpan.FromMinutes(1);
+
+            return await _cacheService.GetOrSet(key, maxAge, async () =>
+            {
+                var filter = $"assignee: me -resolved";
+                var issues = await _connection.GetIssues(filter);
+                return issues.Select(issue => new YouTrackIssue(issue, _serverUri.Value));
+            });
+        }
+
         public async Task<IEnumerable<YouTrackWorkItem>> FetchMyWorkItems(DateTime workDate)
         {
             var key = $"{nameof(YouTrackService)}.WorkItems.{workDate:yyyy-MM-dd}";

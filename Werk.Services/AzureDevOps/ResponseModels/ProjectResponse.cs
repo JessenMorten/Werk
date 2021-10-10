@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Werk.Services.AzureDevOps
+namespace Werk.Services.AzureDevOps.ResponseModels
 {
-    public class Project
+    public class ProjectResponse
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

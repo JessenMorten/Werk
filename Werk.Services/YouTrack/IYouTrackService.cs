@@ -20,5 +20,7 @@ namespace Werk.Services.YouTrack
         /// that was resolved on the specified date.
         /// </summary>
         Task<IEnumerable<YouTrackIssue>> FetchMyResolvedIssues(DateTime resolvedDate);
+
+        Task<IEnumerable<YouTrackIssue>> FetchMyUnresolvedIssues();
     }
 }

@@ -4,6 +4,30 @@ namespace Werk.App
 {
     public static class FormattingExtensions
     {
+        public static string ToAgoMessage(this TimeSpan timeSpan)
+        {
+            if (timeSpan.TotalMinutes < 1)
+            {
+                var unit = (int)timeSpan.TotalSeconds == 1 ? "second" : "seconds";
+                return $"{(int)timeSpan.TotalSeconds} {unit} ago";
+            }
+            else if (timeSpan.TotalHours < 1)
+            {
+                var unit = (int)timeSpan.TotalMinutes == 1 ? "minute" : "minutes";
+                return $"{(int)timeSpan.TotalMinutes} {unit} ago";
+            }
+            else if (timeSpan.TotalDays < 1)
+            {
+                var unit = (int)timeSpan.TotalHours == 1 ? "hour" : "hours";
+                return $"{(int)timeSpan.TotalHours} {unit} ago";
+            }
+            else
+            {
+                var unit = (int)timeSpan.TotalDays == 1 ? "day" : "days";
+                return $"{(int)timeSpan.TotalDays} {unit} ago";
+            }
+        }
+
         public static string ToHourAndMinuteFormat(this double hours)
         {
             var wholeHours = (int)hours;

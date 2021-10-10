@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Werk.Services.AzureDevOps
+namespace Werk.Services.AzureDevOps.ResponseModels
 {
-    public class Member
+    public class MemberResponse
     {
         [JsonPropertyName("identity")]
         public MemberIdentity Identity { get; set; }

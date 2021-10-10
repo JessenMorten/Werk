@@ -23,6 +23,8 @@ namespace Werk.Services.YouTrack
 
         public DateTime WorkDate { get; init; }
 
+        public DateTime LastUpdated { get; init; }
+
         public YouTrackWorkItem()
         {
 
@@ -37,6 +39,7 @@ namespace Werk.Services.YouTrack
             DurationInSeconds = (int)workItem.Duration.TotalSeconds;
             WorkDate = workItem.Date.Value.Date;
             Description = workItem.Description;
+            LastUpdated = workItem.Updated ?? workItem.Created ?? DateTime.MinValue;
         }
     }
 }
