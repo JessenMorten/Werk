@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Werk.Services.AzureDevOps;
 using Werk.Services.YouTrack;
 using Werk.Services.Cache;
+using Werk.Services.News;
 
 namespace Werk.Services
 {
@@ -22,6 +23,10 @@ namespace Werk.Services
             // Add Azure DevOps service
             services.Configure<AzureDevOpsOptions>(configuration.GetSection(nameof(AzureDevOpsOptions)));
             services.AddTransient<IAzureDevOpsService, AzureDevOpsService>();
+
+            // Add news service
+            services.Configure<NewsOptions>(configuration.GetSection(nameof(NewsOptions)));
+            services.AddTransient<INewsService, NewsService>();
         }
     }
 }

@@ -1,0 +1,63 @@
+﻿@inject INewsService _newsService
+
+<Card Image="newspaper.png" Title="News">
+    @if (_news is null)
+    {
+        <h4>...</h4>
+        <p class="m-0">...</p>
+    }
+    else
+    {
+        <h4>@_news.SelectMany(n => n.Posts).Count() news post(s)</h4>
+        @foreach (var news in _news)
+        {
+            <h5 class="mt-3">@news.SourceName</h5>
+            foreach (var post in news.Posts.OrderByDescending(p => p.CreatedAt))
+            {
+                <div class="p-2 rounded-lg border mt-3">
+                    @if (!string.IsNullOrWhiteSpace(post.Title))
+                    {
+                        <p class="text-truncate m-0">
+                            <b>
+                                @if (string.IsNullOrWhiteSpace(post.Link))
+                                {
+                                    @Markup(post.Title)
+                                }
+                                else
+                                {
+                                    <a href="@post.Link">@Markup(post.Title)</a>
+                                }
+                            </b>
+                        </p>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(post.Description))
+                    {
+                        <small class="d-block">@Markup(post.Description)</small>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(post.Meta))
+                    {
+                        <small class="d-block text-muted">@Markup(post.Meta)</small>
+                    }
+
+                    @if (post.CreatedAt != null)
+                    {
+                        <small class="d-block text-muted">@post.CreatedAt.Value</small>
+                    }
+                </div>
+            }
+        }
+    }
+</Card>
+
+@code {
+    private IEnumerable<Services.News.News> _news;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _news = await _newsService.FetchNews();
+    }
+
+    private MarkupString Markup(string value) => (MarkupString)value;
+}

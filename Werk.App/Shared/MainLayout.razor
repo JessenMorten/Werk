@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject IYouTrackService _youTrackService
 @inject IAzureDevOpsService _azureDevOpsService
+@inject INewsService _newsService
 
 <nav class="navbar navbar-light bg-white shadow">
     <div class="container-fluid p-0">
@@ -33,6 +34,8 @@
             <span title="@GetIntegrationTitle(_youTrackServiceStatus)" class="@GetIntegrationClass(_youTrackServiceStatus)">YouTrack</span>
             &nbsp;&bull;&nbsp;
             <span title="@GetIntegrationTitle(_azureDevOpsServiceStatus)" class="@GetIntegrationClass(_azureDevOpsServiceStatus)">Azure DevOps</span>
+            &nbsp;&bull;&nbsp;
+            <span title="@GetIntegrationTitle(_newsServiceStatus)" class="@GetIntegrationClass(_newsServiceStatus)">News</span>
         </p>
     </div>
 </footer>
@@ -42,12 +45,15 @@
 
     private WerkServiceStatus _azureDevOpsServiceStatus;
 
+    private WerkServiceStatus _newsServiceStatus;
+
     private YouTrackUser _youTrackUser;
 
     protected override async Task OnInitializedAsync()
     {
         _youTrackServiceStatus = await _youTrackService.GetStatus();
         _azureDevOpsServiceStatus = await _azureDevOpsService.GetStatus();
+        _newsServiceStatus = await _newsService.GetStatus();
 
         if (_youTrackServiceStatus == WerkServiceStatus.Ready)
         {
