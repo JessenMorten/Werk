@@ -1,28 +1,43 @@
 ﻿@page "/"
 @inject IYouTrackService _youTrackService
 @inject IAzureDevOpsService _azureDevOpsService
+@inject INewsService _newsService
 
 
 <div class="row">
     <!-- Left -->
-    <div class="col-12 col-xl-6">
-        <div class="row">
-            <div class="col-12 mb-3 pr-xl-0">
-                <WorkHours />
-            </div>
-            <div class="col-12 col-xl-6 mb-3 pr-xl-0">
-                <MyUnresolvedIssues />
-            </div>
-            <div class="col-12 col-xl-6 mb-3 pr-0">
-                <SolvedToday />
+    @if (_youTrackStatus == WerkServiceStatus.Ready)
+    {
+        <div class="col-12 col-xl-5">
+            <div class="row">
+                <div class="col-12 mb-3 pr-xl-0">
+                    <WorkHours />
+                </div>
+                <div class="col-12 col-xl-6 mb-3 pr-xl-0">
+                    <MyUnresolvedIssues />
+                </div>
+                <div class="col-12 col-xl-6 mb-3 pr-xl-0">
+                    <SolvedToday />
+                </div>
             </div>
         </div>
-    </div>
+    }
+
 
     <!-- Right -->
-    <div class="col-12 col-xl-6 mb-3">
-        <ActivePullRequests />
-    </div>
+    @if (_azureDevOpsStatus == WerkServiceStatus.Ready)
+    {
+        <div class="col-12 col-xl-4 mb-3 pr-xl-0">
+            <ActivePullRequests />
+        </div>
+    }
+
+    @if (_newsStatus == WerkServiceStatus.Ready)
+    {
+        <div class="col-12 col-xl-3 mb-3">
+            <News />
+        </div>
+    }
 </div>
 
 @code{
@@ -30,9 +45,12 @@
 
     private WerkServiceStatus _azureDevOpsStatus;
 
+    private WerkServiceStatus _newsStatus;
+
     protected override async Task OnInitializedAsync()
     {
         _youTrackStatus = await _youTrackService.GetStatus();
         _azureDevOpsStatus = await _azureDevOpsService.GetStatus();
+        _newsStatus = await _newsService.GetStatus();
     }
 }
