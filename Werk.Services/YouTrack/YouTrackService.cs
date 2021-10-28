@@ -182,5 +182,34 @@ namespace Werk.Services.YouTrack
                     .ToList();
             });
         }
+
+        public async Task<(DateTime? date, IOrderedEnumerable<YouTrackWorkItem> workItems)> FetchLastWorkingDaysWorkItems(int maxDays = 7)
+        {
+            var key = $"{nameof(YouTrackService)}.LastWorkingDaysWorkItems.{maxDays}";
+            var maxAge = TimeSpan.FromMinutes(5);
+
+            var workItems = await _cacheService.GetOrSet(key, maxAge, async () =>
+            {
+                var items = Enumerable.Empty<YouTrackWorkItem>();
+
+                for (int i = 1; i <= maxDays; i++)
+                {
+                    var date = DateTime.UtcNow.AddDays(-i);
+                    items = await FetchMyWorkItems(date);
+
+                    if (items.Any())
+                    {
+                        break;
+                    }
+                }
+
+                return items;
+            });
+
+            var orderedWorkItems = workItems.OrderByDescending(w => w.Duration);
+            DateTime? workDate = workItems.Any() ? workItems.First().WorkDate : null;
+
+            return (workDate, orderedWorkItems);
+        }
     }
 }
