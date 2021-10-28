@@ -24,6 +24,6 @@ namespace Werk.Services.YouTrack
 
         Task<IEnumerable<YouTrackIssue>> FetchMyUnresolvedIssues();
 
-        Task<(DateTime date, IOrderedEnumerable<YouTrackWorkItem> workItems)> FetchLastWorkingDaysWorkItems(int maxDays = 7);
+        Task<(DateTime? date, IOrderedEnumerable<YouTrackWorkItem> workItems)> FetchLastWorkingDaysWorkItems(int maxDays = 7);
     }
 }

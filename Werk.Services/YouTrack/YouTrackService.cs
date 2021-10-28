@@ -183,23 +183,33 @@ namespace Werk.Services.YouTrack
             });
         }
 
-        public async Task<(DateTime date, IOrderedEnumerable<YouTrackWorkItem> workItems)> FetchLastWorkingDaysWorkItems(int maxDays = 7)
+        public async Task<(DateTime? date, IOrderedEnumerable<YouTrackWorkItem> workItems)> FetchLastWorkingDaysWorkItems(int maxDays = 7)
         {
-            var workItems = Enumerable.Empty<YouTrackWorkItem>();
-            var date = DateTime.UtcNow;
+            var key = $"{nameof(YouTrackService)}.LastWorkingDaysWorkItems.{maxDays}";
+            var maxAge = TimeSpan.FromMinutes(5);
 
-            for (int i = 1; i <= maxDays; i++)
+            var workItems = await _cacheService.GetOrSet(key, maxAge, async () =>
             {
-                date = date.AddDays(-i);
-                workItems = await FetchMyWorkItems(date);
+                var items = Enumerable.Empty<YouTrackWorkItem>();
 
-                if (workItems.Any())
+                for (int i = 1; i <= maxDays; i++)
                 {
-                    break;
-                }
-            }
+                    var date = DateTime.UtcNow.AddDays(-i);
+                    items = await FetchMyWorkItems(date);
 
-            return (date, workItems.OrderByDescending(w => w.Duration));
+                    if (items.Any())
+                    {
+                        break;
+                    }
+                }
+
+                return items;
+            });
+
+            var orderedWorkItems = workItems.OrderByDescending(w => w.Duration);
+            DateTime? workDate = workItems.Any() ? workItems.First().WorkDate : null;
+
+            return (workDate, orderedWorkItems);
         }
     }
 }
