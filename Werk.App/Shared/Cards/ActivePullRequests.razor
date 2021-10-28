@@ -28,7 +28,7 @@
                     <div class="d-flex flex-column ml-2">
                         <h6><a href="@pullRequest.Url">@pullRequest.Title</a></h6>
                         <small class="text-truncate">Created by @pullRequest.Creator.DisplayName</small>
-                        <small class="text-truncate"><span title="@pullRequest.CreationDate">@((DateTime.Now - pullRequest.CreationDate).ToAgoMessage())</span> in <a href="@pullRequest.RepositoryUrl">@pullRequest.RepositoryName</a></small>
+                        <small class="text-truncate"><span>@((DateTime.UtcNow - pullRequest.CreationDate).ToAgoMessage())</span> in <a href="@pullRequest.RepositoryUrl">@pullRequest.RepositoryName</a></small>
                     </div>
                 </div>
 
