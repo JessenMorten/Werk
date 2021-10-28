@@ -10,7 +10,7 @@
     {
         <h4>@_myActivePullRequests.Count() active pull request(s)</h4>
 
-        @foreach (var pullRequest in _myActivePullRequests.OrderByDescending(pr => pr.CreationDate))
+        @foreach (var pullRequest in _myActivePullRequests)
         {
             <div class="p-2 border rounded-lg mt-3" style="opacity: @GetOpacity(pullRequest)">
                 <div class="mt-n1 float-right text-right">
@@ -46,7 +46,7 @@
 </Card>
 
 @code {
-    private IEnumerable<PullRequest> _myActivePullRequests;
+    private IOrderedEnumerable<PullRequest> _myActivePullRequests;
 
     protected override async Task OnInitializedAsync()
     {

@@ -55,6 +55,23 @@ namespace Werk.Services.AzureDevOps
                 }
             });
         }
+
+        public async Task<IOrderedEnumerable<PullRequest>> FetchAllPullRequests()
+        {
+            var key = $"{nameof(AzureDevOpsService)}.AllPullRequests";
+            var maxAge = TimeSpan.FromMinutes(1);
+
+            var pullRequests = await _cacheService.GetOrSet(key, maxAge, async () =>
+            {
+                var repositories = await FetchAllRepositories();
+                var pullRequestTasks = repositories.Select(FetchPullRequests).ToList();
+                await Task.WhenAll(pullRequestTasks);
+                return pullRequestTasks.SelectMany(t => t.Result);
+            });
+
+            return pullRequests.OrderByDescending(p => p.CreationDate);
+        }
+
         private async Task<IEnumerable<ProjectResponse>> FetchAllProjects()
         {
             var key = $"{nameof(AzureDevOpsService)}.AllProjects";
@@ -144,20 +161,6 @@ namespace Werk.Services.AzureDevOps
                 var requestUri = $"{project.Name}/_apis/git/repositories?api-version=6.0";
                 var response = await GetFromJson<ListResponse<RepositoryResponse>>(requestUri);
                 return response.Value ?? Enumerable.Empty<RepositoryResponse>();
-            });
-        }
-
-        public async Task<IEnumerable<PullRequest>> FetchAllPullRequests()
-        {
-            var key = $"{nameof(AzureDevOpsService)}.AllPullRequests";
-            var maxAge = TimeSpan.FromMinutes(1);
-
-            return await _cacheService.GetOrSet(key, maxAge, async () =>
-            {
-                var repositories = await FetchAllRepositories();
-                var pullRequestTasks = repositories.Select(FetchPullRequests).ToList();
-                await Task.WhenAll(pullRequestTasks);
-                return pullRequestTasks.SelectMany(t => t.Result);
             });
         }
 
