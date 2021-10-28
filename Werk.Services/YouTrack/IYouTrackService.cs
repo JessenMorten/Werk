@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Werk.Services.YouTrack
@@ -22,5 +23,7 @@ namespace Werk.Services.YouTrack
         Task<IEnumerable<YouTrackIssue>> FetchMyResolvedIssues(DateTime resolvedDate);
 
         Task<IEnumerable<YouTrackIssue>> FetchMyUnresolvedIssues();
+
+        Task<(DateTime date, IOrderedEnumerable<YouTrackWorkItem> workItems)> FetchLastWorkingDaysWorkItems(int maxDays = 7);
     }
 }
