@@ -46,5 +46,10 @@ namespace Werk.App
                 return $"{wholeMinutes}m";
             }
         }
+
+        public static string ToHourAndMinuteFormat(this TimeSpan timeSpan)
+        {
+            return timeSpan.TotalHours.ToHourAndMinuteFormat();
+        }
     }
 }

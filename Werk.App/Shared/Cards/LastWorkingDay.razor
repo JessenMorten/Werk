@@ -1,0 +1,71 @@
+﻿@inject IYouTrackService _youTrackService
+
+<Card Image="previous.png" Title="Last working day">
+    @if (_lastWorkingDaysWorkItems is null)
+    {
+        <h4>...</h4>
+        <p class="m-0">...</p>
+    }
+    else if (_lastWorkingDaysWorkItems.Any())
+    {
+        <h4>@GetFormattedWorkingDate()</h4>
+        @foreach (var (workItem, index) in _lastWorkingDaysWorkItems.Select((w, i) => (w, i)))
+        {
+            if (index > 0)
+            {
+                <hr class="my-2" />
+            }
+            <small class="text-muted">@workItem.Duration.ToHourAndMinuteFormat()</small>
+            <h6><a href="@workItem.IssueLink">@workItem.IssueSummary</a></h6>
+            <p class="m-0">@StringOrDefault(workItem.Description, "No description...")</p>
+        }
+    }
+    else
+    {
+        <h4>No work items for the previous @_maxDays days</h4>
+    }
+</Card>
+
+@code {
+    private DateTime? _lastWorkingDay;
+
+    private IOrderedEnumerable<YouTrackWorkItem> _lastWorkingDaysWorkItems;
+
+    private readonly int _maxDays = 7;
+
+    protected override async Task OnInitializedAsync()
+    {
+        (_lastWorkingDay, _lastWorkingDaysWorkItems) = await _youTrackService.FetchLastWorkingDaysWorkItems(_maxDays);
+    }
+
+    private string GetFormattedWorkingDate()
+    {
+        var month = _lastWorkingDay.Value.Month switch
+        {
+            1 => "January",
+            2 => "February",
+            3 => "March",
+            4 => "April",
+            5 => "May",
+            6 => "June",
+            7 => "July",
+            8 => "August",
+            9 => "September",
+            10 => "October",
+            11 => "November",
+            12 => "December",
+            _ => string.Empty
+        };
+
+        return $"{_lastWorkingDay.Value.DayOfWeek}, {month} {_lastWorkingDay.Value.Day}";
+    }
+
+    private string StringOrDefault(string str, string fallback)
+    {
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            return fallback;
+        }
+        return str;
+    }
+}
